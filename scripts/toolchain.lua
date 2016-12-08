@@ -52,9 +52,11 @@ function toolchain(_buildDir, _libDir)
 			{ "vs2012-clang",  "Clang 3.6"                       },
 			{ "vs2013-clang",  "Clang 3.6"                       },
 			{ "vs2015-clang",  "Clang 3.9"                       },
+			{ "vs2017-clang",  "Clang with MS CodeGen"           },
 			{ "vs2012-xp",     "Visual Studio 2012 targeting XP" },
 			{ "vs2013-xp",     "Visual Studio 2013 targeting XP" },
 			{ "vs2015-xp",     "Visual Studio 2015 targeting XP" },
+			{ "vs2017-xp",     "Visual Studio 2017 targeting XP" },
 			{ "winphone8",     "Windows Phone 8.0"               },
 			{ "winphone81",    "Windows Phone 8.1"               },
 			{ "winstore81",    "Windows Store 8.1"               },
@@ -91,6 +93,12 @@ function toolchain(_buildDir, _libDir)
 		trigger     = "with-tvos",
 		value       = "#",
 		description = "Set tvOS target version (default: 9.0).",
+	}
+
+	newoption {
+		trigger = "with-windows",
+		value = "#",
+		description = "Set the Windows target platform version (default: 10.0.10240.0).",
 	}
 
 	newoption {
@@ -132,6 +140,11 @@ function toolchain(_buildDir, _libDir)
 	local tvosPlatform = ""
 	if _OPTIONS["with-tvos"] then
 		tvosPlatform = _OPTIONS["with-tvos"]
+	end
+
+	local windowsPlatform = "10.0.10240.0"
+	if _OPTIONS["with-windows"] then
+		windowsPlatform = _OPTIONS["with-windows"]
 	end
 
 	local compiler32bit = false
@@ -402,11 +415,17 @@ function toolchain(_buildDir, _libDir)
 			location (path.join(_buildDir, "projects", _ACTION .. "-riscv"))
 
 		end
-	elseif _ACTION == "vs2012" or _ACTION == "vs2013" or _ACTION == "vs2015" then
+	elseif _ACTION == "vs2012"
+		or _ACTION == "vs2013"
+		or _ACTION == "vs2015"
+		or _ACTION == "vs2017"
+		then
 
 		if (_ACTION .. "-clang") == _OPTIONS["vs"] then
-			if "vs2015-clang" == _OPTIONS["vs"] then
-				premake.vstudio.toolset = ("LLVM-vs2014")
+			if "vs2017-clang" == _OPTIONS["vs"] then
+				premake.vstudio.toolset = "v141_clang_c2"
+			elseif "vs2015-clang" == _OPTIONS["vs"] then
+				premake.vstudio.toolset = "LLVM-vs2014"
 			else
 				premake.vstudio.toolset = ("LLVM-" .. _ACTION)
 			end
@@ -431,6 +450,11 @@ function toolchain(_buildDir, _libDir)
 		elseif "winstore82" == _OPTIONS["vs"] then
 			premake.vstudio.toolset = "v140"
 			premake.vstudio.storeapp = "8.2"
+
+			local action = premake.action.current()
+			action.vstudio.windowsTargetPlatformVersion = windowsPlatform
+			action.vstudio.windowsTargetPlatformMinVersion = windowsPlatform
+
 			platforms { "ARM" }
 			location (path.join(_buildDir, "projects", _ACTION .. "-winstore82"))
 
@@ -464,6 +488,10 @@ function toolchain(_buildDir, _libDir)
 
 		elseif "vs2015-xp" == _OPTIONS["vs"] then
 			premake.vstudio.toolset = ("v140_xp")
+			location (path.join(_buildDir, "projects", _ACTION .. "-xp"))
+
+		elseif "vs2015-xp" == _OPTIONS["vs"] then
+			premake.vstudio.toolset = ("v141_xp")
 			location (path.join(_buildDir, "projects", _ACTION .. "-xp"))
 
 	elseif _ACTION == "xcode4" then
@@ -559,6 +587,21 @@ function toolchain(_buildDir, _libDir)
 		}
 
 	configuration { "x64", "vs*" }
+		defines { "_WIN64" }
+		targetdir (path.join(_buildDir, "win64_" .. _ACTION, "bin"))
+		objdir (path.join(_buildDir, "win64_" .. _ACTION, "obj"))
+		libdirs {
+			path.join(_libDir, "lib/win64_" .. _ACTION),
+		}
+
+	configuration { "x32", "vs2017" }
+		targetdir (path.join(_buildDir, "win32_" .. _ACTION, "bin"))
+		objdir (path.join(_buildDir, "win32_" .. _ACTION, "obj"))
+		libdirs {
+			path.join(_libDir, "lib/win32_" .. _ACTION),
+		}
+
+	configuration { "x64", "vs2017" }
 		defines { "_WIN64" }
 		targetdir (path.join(_buildDir, "win64_" .. _ACTION, "bin"))
 		objdir (path.join(_buildDir, "win64_" .. _ACTION, "obj"))
