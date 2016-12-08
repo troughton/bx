@@ -73,7 +73,7 @@
 #	define BX_NO_VTABLE
 #	define BX_OVERRIDE
 #	define BX_PRINTF_ARGS(_format, _args) __attribute__( (format(__printf__, _format, _args) ) )
-#	if BX_CLANG_HAS_FEATURE(cxx_thread_local)
+#	if BX_CLANG_HAS_FEATURE(cxx_thread_local) && !defined(__CYGWIN__)
 #		define BX_THREAD_LOCAL __thread
 #	endif // BX_COMPILER_CLANG
 #	if (!BX_PLATFORM_OSX && (BX_COMPILER_GCC >= 40200)) || (BX_COMPILER_GCC >= 40500)

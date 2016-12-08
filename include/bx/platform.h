@@ -231,6 +231,51 @@
 #elif defined(__GNU__)
 #	undef  BX_PLATFORM_HURD
 #	define BX_PLATFORM_HURD 1
+#elif defined(__CYGWIN__)
+#	ifndef NOMINMAX
+#		define NOMINMAX
+#	endif // NOMINMAX
+#undef BX_PLATFORM_WINDOWS
+#				define WINVER 0x0601
+#				define _WIN32_WINNT 0x0601
+#		define BX_PLATFORM_WINDOWS _WIN32_WINNT
+#define ftello64 ftello
+#define fseeko64 fseeko
+#define _In_range_(x, y)
+#define _In_reads_(x)
+#define _In_reads_opt_(x)
+#define _In_reads_bytes_(x)
+#define _In_reads_bytes_opt_(x)
+#define _Out_writes_(x)
+#define _Out_writes_bytes_(x)
+#define _Out_writes_opt_(x)
+#define _Out_writes_to_opt_(x, y)
+#define _Out_writes_bytes_to_(x, y)
+#define _Out_writes_bytes_opt_(x)
+#define _COM_Outptr_opt_result_maybenull_
+#define _Out_writes_all_opt_(x)
+#define _In_
+#define _In_z_
+#define _Out_
+#define _Inout_
+#define _Inout_opt_
+#define _Inout_opt_bytecount_(x)
+#define _Inout_updates_bytes_(x)
+#define _COM_Outptr_
+#define _COM_Outptr_opt_
+#define _Out_opt_
+#define _Outptr_
+#define _Outptr_opt_
+#define _Outptr_result_maybenull_
+#define _Outptr_opt_result_maybenull_
+#define _Outptr_result_bytebuffer_(x)
+#define _Outptr_opt_result_bytebuffer_(x)
+#define _Field_size_(x)
+#define _Field_size_opt_(x)
+#define _Field_size_full_(x)
+#define _Field_size_bytes_full_(x)
+#define _Always_(x)
+#define __in_bcount(x)
 #else
 #	error "BX_PLATFORM_* is not defined!"
 #endif //
