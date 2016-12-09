@@ -27,7 +27,7 @@
 #ifndef TINYSTL_STDDEF_H
 #define TINYSTL_STDDEF_H
 
-#if defined(_WIN64)
+#if defined(_WIN64) && !defined(__CYGWIN__)
 	typedef long long unsigned int size_t;
 #elif defined(_WIN32)
 	typedef unsigned int size_t;

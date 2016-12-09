@@ -32,6 +32,7 @@ function toolchain(_buildDir, _libDir)
 			{ "tvos-simulator",  "tvOS - Simulator"           },
 			{ "mingw-gcc",       "MinGW"                      },
 			{ "mingw-clang",     "MinGW (clang compiler)"     },
+			{ "cygwin-clang",    "Cygwin (clang compiler)"	  },
 			{ "nacl",            "Native Client"              },
 			{ "nacl-arm",        "Native Client - ARM"        },
 			{ "netbsd",          "NetBSD"                     },
@@ -298,6 +299,14 @@ function toolchain(_buildDir, _libDir)
 --			premake.gcc.ar   = "$(CLANG)/bin/llvm-ar"
 --			premake.gcc.llvm = true
 			location (path.join(_buildDir, "projects", _ACTION .. "-mingw-clang"))
+
+		elseif "cygwin-clang" == _OPTIONS["gcc"] then
+ 			premake.gcc.cc   = "$(CLANG)/bin/clang"
+ 			premake.gcc.cxx  = "$(CLANG)/bin/clang++"
+ 			premake.gcc.ar   = "$(CLANG)/bin/ar"
+ --			premake.gcc.ar   = "$(CLANG)/bin/llvm-ar"
+ --			premake.gcc.llvm = true
+ 			location (path.join(_buildDir, "projects", _ACTION .. "-cygwin-clang"))	
 
 		elseif "nacl" == _OPTIONS["gcc"] then
 
@@ -667,6 +676,51 @@ function toolchain(_buildDir, _libDir)
 			path.join(_libDir, "lib/win64_mingw-clang"),
 		}
 		buildoptions { "-m64" }
+
+	configuration { "cygwin-*" }
+ 		defines { "WIN32" }
+ 		includedirs { path.join(bxDir, "include/compat/cygwin") }
+ 		buildoptions {
+ 			"-Wunused-value",
+ 			"-fdata-sections",
+ 			"-ffunction-sections",
+ 			"-msse2",
+ 			"-Wunused-value",
+ 			"-Wundef",
+ 			"-Wno-ignored-attributes",
+ 		}
+ 		buildoptions_cpp {
+ 			"-std=c++11",
+ 		}
+ 		links {
+ 			"gdi32",
+ 			"psapi",
+ 		}
+ 		linkoptions {
+ 			"-Wl,--gc-sections",
+ 			"-static",
+ 			"-static-libgcc",
+ 			"-static-libstdc++",
+ 		}
+ 
+ 	configuration { "x32", "cygwin-clang" }
+ 		targetdir (path.join(_buildDir, "win32_cygwin-clang/bin"))
+ 		objdir (path.join(_buildDir, "win32_cygwin-clang/obj"))
+ 		libdirs {
+ 			path.join(_libDir, "lib/win32_cygwin-clang"),
+ 		}
+ 		buildoptions {
+ 			"-m32",
+ 			"-mstackrealign",
+ 		}
+ 
+ 	configuration { "x64", "cygwin-clang" }
+ 		targetdir (path.join(_buildDir, "win64_cygwin-clang/bin"))
+ 		objdir (path.join(_buildDir, "win64_cygwin-clang/obj"))
+ 		libdirs {
+ 			path.join(_libDir, "lib/win64_cygwin-clang"),
+ 		}
+ 		buildoptions { "-m64" }
 
 	configuration { "linux-clang" }
 
@@ -1305,6 +1359,12 @@ function strip()
 		postbuildcommands {
 			"$(SILENT) echo Stripping symbols.",
 			"$(SILENT) $(MINGW)/bin/strip -s \"$(TARGET)\""
+		}
+
+	configuration { "cygwin*", "Release" }
+		postbuildcommands {
+			"$(SILENT) echo Stripping symbols.",
+			"$(SILENT) $(CLANG)/bin/strip -s \"$(TARGET)\""
 		}
 
 	configuration { "pnacl" }
