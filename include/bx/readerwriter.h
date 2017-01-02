@@ -1,5 +1,5 @@
 /*
- * Copyright 2010-2016 Branimir Karadzic. All rights reserved.
+ * Copyright 2010-2017 Branimir Karadzic. All rights reserved.
  * License: https://github.com/bkaradzic/bx#license-bsd-2-clause
  */
 
@@ -16,10 +16,11 @@
 #include "error.h"
 #include "uint32_t.h"
 
-BX_ERROR_RESULT(BX_ERROR_READERWRITER_OPEN,  BX_MAKEFOURCC('R', 'W', 0, 1) );
-BX_ERROR_RESULT(BX_ERROR_READERWRITER_READ,  BX_MAKEFOURCC('R', 'W', 0, 2) );
-BX_ERROR_RESULT(BX_ERROR_READERWRITER_WRITE, BX_MAKEFOURCC('R', 'W', 0, 3) );
-BX_ERROR_RESULT(BX_ERROR_READERWRITER_EOF,   BX_MAKEFOURCC('R', 'W', 0, 4) );
+BX_ERROR_RESULT(BX_ERROR_READERWRITER_OPEN,         BX_MAKEFOURCC('R', 'W', 0, 1) );
+BX_ERROR_RESULT(BX_ERROR_READERWRITER_READ,         BX_MAKEFOURCC('R', 'W', 0, 2) );
+BX_ERROR_RESULT(BX_ERROR_READERWRITER_WRITE,        BX_MAKEFOURCC('R', 'W', 0, 3) );
+BX_ERROR_RESULT(BX_ERROR_READERWRITER_EOF,          BX_MAKEFOURCC('R', 'W', 0, 4) );
+BX_ERROR_RESULT(BX_ERROR_READERWRITER_ALREADY_OPEN, BX_MAKEFOURCC('R', 'W', 0, 5) );
 
 namespace bx
 {
